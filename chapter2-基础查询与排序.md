@@ -1,4 +1,4 @@
-# 基础查询与排序
+·# 基础查询与排序
 
 # 这是我们初始的表
 
@@ -168,3 +168,45 @@ GROUP BY <列名1>···;
 ```
 
 GROUP BY与聚合函数的差异:聚合函数是对整个表进行整合
+
+#### 3.2.2 对取出的分组进行筛选
+
+比如根据产品种类分为3组
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/20d5489e-6ddf-4f3c-8397-a5191469a836)
+
+我该如何取出“衣服”和“办公用品”组类呢
+
+在这里我们用HAVING函数
+
+```sql
+SELECT <列名1>···
+FROM <表名>
+GROUP BY <列名1>···
+HAVING <条件>;
+```
+
+这里HAVING的用法和where的用法一样不过不能用where
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/fe52ab38-320e-4212-a020-ef4fd41a2c06)
+
+这个例子表示的就是把购买价格大于2500的商品根据购买价格分类，count表示这一类有几个商品
+
+#### 3.2.3 对表进行排序
+
+##### ORDER BY
+
+ASC表示升序，DESC表示降序，默认为ASC
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/bcdd69eb-3e07-459a-9002-24cf6d8c23f0)
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/d3ddfcb6-9db9-43af-a3b1-670ed8a2e3e7)
+
+表明在order by中是可以使用别名的，在sql语句中，执行顺序如下
+
+FROM → WHERE → GROUP BY → SELECT → HAVING → ORDER BY 
+
+这也是为什么GROUP BY中使用不了别名的原因
+
+还有就是任何非NULL值都比NULL值大
+
