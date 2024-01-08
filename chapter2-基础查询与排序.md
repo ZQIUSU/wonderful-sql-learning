@@ -224,4 +224,51 @@ SELECT product_id, SUM（product_name）
  WHERE regist_date > '2009-09-01';
 ```
 
-1.要根据GROUP BY对regist_date进行分组，SELECT 里肯定要有regist_date
+答:
+
+1.要根据GROUP BY对product_type进行分组，SELECT 里肯定要有product_type
+
+2.product_name 为string类型，不可以使用SUM聚合函数，可以用COUNT
+
+3.GROUP BY后边不可以跟WHERE语句，筛选条件的话WHERE得在GROUP BY前边
+
+下列是更改过后的语句
+
+```sql
+SELECT product_type,COUNT(product_name)
+-- 在SELECT语句中使用了错误的列名，我将其更正为正确的列名product_type。
+FROM product
+WHERE regist_date > '2009-09-01'
+GROUP BY product_type;
+```
+
+#### 4.2 
+
+请编写一条SELECT语句，求出销售单价（ `sale_price` 列）合计值大于进货单价（ `purchase_price` 列）合计值1.5倍的商品种类。执行结果如下所示。
+
+```sql
+product_type | sum  | sum 
+-------------+------+------
+衣服         | 5000 | 3300
+办公用品      |  600 | 320
+```
+
+答:
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/d40b39cb-9bab-404b-888b-402608e6395d)
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/34bcc95e-b27b-4424-b6a6-8510ac6934bf)
+
+#### 4.3
+
+此前我们曾经使用SELECT语句选取出了product（商品）表中的全部记录。当时我们使用了 `ORDER BY` 子句来指定排列顺序，但现在已经无法记起当时如何指定的了。请根据下列执行结果，思考 `ORDER BY` 子句的内容。
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/993030aa-02fd-490c-b9f0-e1ac3848c97c)
+
+答:
+
+由图可知，是根据注册时间决定的，而且最前面是NULL，说明是ASC排序，而且在相同的时间段内，购买价格也是有规律的，而且最前面的也是NULL，说明和购买价格也有关系，而且也是ASC排序的，具体观察后，注册时间是降序，所以前面加负号，价格是升序，所以不用加，于是就是ORDER BY -regist_date,purchase_price;
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/3f962034-62d5-4b3d-9c3b-f6a3c5192739)
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/32730908-de3c-4c39-bd38-ba6917befe7a)
