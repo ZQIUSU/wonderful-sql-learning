@@ -112,7 +112,7 @@ T恤衫        | 　 1000    | 500
 
 ### 3.1 聚合函数
 
-SQL中用于汇总的函数叫做聚合函数。以下五个是最常用的聚合函数：
+SQL中用于汇总的函数叫做聚合函数。以下五个是最常用的聚合函数：(COUNT会处理所有行，包括NULL行，别的函数不会)
 
 - SUM：计算表中某数值列中的合计值
 
@@ -154,3 +154,17 @@ SELECT COUNT(purchase_price)
 表示表格里product_type的种类有3种，如果没有distinct，会算上重复的种类
 
 ![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/77ba4636-544c-4c92-9cb5-45f2e8262983)
+
+### 3.2 对表进行分组
+
+#### 3.2.1 GROUP BY语句
+
+GROUP BY进行分组汇总
+
+```sql
+SELECT <列名1>···
+FROM <表名>
+GROUP BY <列名1>···;
+```
+
+GROUP BY与聚合函数的差异:聚合函数是对整个表进行整合
