@@ -210,3 +210,18 @@ FROM → WHERE → GROUP BY → SELECT → HAVING → ORDER BY
 
 还有就是任何非NULL值都比NULL值大
 
+### 作业(第二部分)
+
+#### 4.1
+
+请指出下述SELECT语句中所有的语法错误。
+
+```sql
+SELECT product_id, SUM（product_name）
+--本SELECT语句中存在错误。
+  FROM product 
+ GROUP BY product_type 
+ WHERE regist_date > '2009-09-01';
+```
+
+1.要根据GROUP BY对regist_date进行分组，SELECT 里肯定要有regist_date
