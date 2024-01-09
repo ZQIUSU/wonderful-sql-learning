@@ -167,3 +167,58 @@ WHERE sale_price > (SELECT AVG(sale_price)
 ```
 
 # 练习题
+
+1.创建出满足下述三个条件的视图（视图名称为 ViewPractice5_1）。使用 product（商品）表作为参照表，假设表中包含初始状态的 8 行数据。
+
+- 条件 1：销售单价大于等于 1000 日元。
+
+- 条件 2：登记日期是 2009 年 9 月 20 日。
+
+- 条件 3：包含商品名称、销售单价和登记日期三列。
+
+```sql
+CREATE VIEW ViewPractice5_1
+AS
+(SELECT product_name,sale_price,regist_date
+FROM product 
+WHERE sale_price >= 1000 and regist_date ="2009-09-11" );
+```
+
+2.向习题一中创建的视图`ViewPractice5_1`中插入如下数据，会得到什么样的结果？为什么？
+
+```sql
+INSERT INTO ViewPractice5_1 VALUES (' 刀子 ', 300, '2009-11-02');
+```
+
+答:会报错，具体不知道为什么
+
+3.请根据如下结果编写 SELECT 语句，其中 sale_price_avg 列为全部商品的平均销售单价。
+
+```sql
+
+SELECT product_id,
+	product_name,
+	product_type,
+	sale_price,
+	(SELECT avg(sale_price)
+		FROM product) as avg_sale_price
+FROM product;
+```
+
+4.请根据习题一中的条件编写一条 SQL 语句，创建一幅包含如下数据的视图（名称为AvgPriceByType）。
+
+```sql
+CREATE VIEW AvgPriceByType
+AS
+(SELECT product_id,
+	product_name,
+	product_type,
+	sale_price,
+	(SELECT AVG(sale_price) 
+	FROM product as P2
+	WHERE P1.product_type=P2.product_type
+	GROUP BY product_type) as sale_price_avg_type
+FROM product as P1);
+```
+
+这里求各种商品分别种类的平均售价，我们用关联子查询
