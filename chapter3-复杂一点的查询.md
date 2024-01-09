@@ -88,3 +88,60 @@ ALTER VIEW <视图名称> AS <SELECT语句>;
 
 * FROM 子句中包含多个表。
 
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/c5873b36-e95c-4600-b617-6fd44e1a927d)
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/9d57f9c7-2321-4d90-b680-2ce5716fc609)
+
+视图是由表派生出来的，所以视图更新的时候表也会更新，如下图
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/9b3df93d-6896-4427-9e59-6368f427a0a4)
+
+我们可以看到，只有一个product_type="办公用品"的商品改变了，由此我们可以得知视图相当于一个窗口，所以修改也只能修改通过窗口看到的内容
+
+**注意：这里虽然修改成功了，但是并不推荐这种使用方式。而且我们在创建视图时也尽量使用限制不允许通过视图来修改表**
+
+### 3.1.7 如何删除视图
+
+```sql
+DROP VIEW <视图名称>;
+```
+
+## 3.2 子查询
+
+### 3.2.1 什么是子查询
+
+子查询指一个查询语句嵌套在另一个查询语句内部的查询，这个特性从 MySQL 4.1 开始引入，在 SELECT 子句中先计算子查询，子查询结果作为外层另一个查询的过滤条件，查询可以基于一个表或者多个表。
+
+### 3.2.2 子查询与视图的关系
+
+子查询和创建视图的SELECT语句一样，只不过子查询不会像视图那样保存，SELECT语句执行之后就消失了
+
+### 3.2.3 标量子查询
+
+标量就是单一的意思，那么标量子查询也就是单一的子查询
+
+要求SQL语句返回一个值，具体到某一行某一列
+
+### 3.2.4 标量子查询有什么用
+
+```sql
+SELECT product_id, product_name, sale_price
+  FROM product
+ WHERE sale_price > (SELECT AVG(sale_price) FROM product);
+```
+
+标量子查询不仅仅局限于 WHERE 子句中，通常任何可以使用单一值的位置都可以使用。也就是说， 能够使用常数或者列名的地方，无论是 SELECT 子句、GROUP BY 子句、HAVING 子句，还是 ORDER BY 子句，几乎所有的地方都可以使用。
+
+我们还可以这样使用标量子查询
+
+```sql
+SELECT product_id,
+       product_name,
+       sale_price,
+       (SELECT AVG(sale_price)
+          FROM product) AS avg_price
+  FROM product;
+```
+
+### 3.2.5 关联子查询
+
