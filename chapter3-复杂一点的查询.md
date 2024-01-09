@@ -62,4 +62,29 @@ WHERE product_type="衣服";
 
 ### 3.1.5 如何修改视图结构
 
+```sql
+ALTER VIEW <视图名称> AS <SELECT语句>;
+```
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/cbf78df6-11cd-4034-8419-f0f671e8198a)
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/d0b765f0-710e-4d1f-9ef0-cd64e0d6deca)
+
+### 3.1.6 如何更新视图内容
+
+因为视图是一个虚拟表，所以对视图的操作就是对底层基础表的操作，所以在修改时只有满足底层基本表的定义才能成功修改。
+
+对于一个视图来说，如果包含以下结构的任意一种都是不可以被更新的：
+
+* 聚合函数 SUM()、MIN()、MAX()、COUNT() 等。
+  
+* DISTINCT 关键字。
+
+* GROUP BY 子句。
+
+* HAVING 子句。
+
+* UNION 或 UNION ALL 运算符。
+
+* FROM 子句中包含多个表。
 
