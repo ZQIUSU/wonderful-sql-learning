@@ -145,3 +145,25 @@ SELECT product_id,
 
 ### 3.2.5 关联子查询
 
+- 关联子查询与子查询的关系
+
+我们之前的例子，`查询出销售单价高于平均销售单价的商品`，他的语句是这样写的
+
+```sql
+SELECT product_id,product_name,sale_price
+FROM product
+WHERE sale_price > (SELECT AVG(sale_price)
+                      FROM product);
+```
+
+我们再来看一下接下来这个例子，`选取出各商品种类中高于该商品种类的平均销售单价的商品`，SQL语句如下
+
+```sql
+SELECT product_id,product_name,sale_price
+  FROM product as P1
+WHERE sale_price > (SELECT AVG(sale_price)
+                      FROM product as P2
+                    WHERE P1.product_type=P2.product_type);
+```
+
+# 练习题
