@@ -384,3 +384,49 @@ WHERE purchase_price IN (320,500,5000);
 ### 3.4.6 使用子查询作为IN的参数
 
 IN和NOT IN可以使用子查询作为参数
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/8b626bdd-c60b-4e83-9eb3-216f87059045)
+
+### 3.4.7 EXIST
+
+跟一个参数，通常是子查询
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/06296a4a-f6fb-4257-a041-ff8a4c57347e)
+
+## 3.5 CASE表达式
+
+### 3.5.1 什么是CASE表达式
+
+CASE表达式是分支表达式
+
+CASE表达式的语法分为简单CASE表达式和搜索CASE表达式两种。由于搜索CASE表达式包含简单CASE表达式的全部功能。本课程将重点介绍搜索CASE表达式。
+
+```plain
+CASE WHEN <求值表达式> THEN <表达式>
+     WHEN <求值表达式> THEN <表达式>
+     WHEN <求值表达式> THEN <表达式>
+     .
+     .
+     .
+ELSE <表达式>
+END  
+```
+
+上述语句执行时，依次判断 when 表达式是否为真值，是则执行 THEN 后的语句，如果所有的 when 表达式均为假，则执行 ELSE 后的语句。 无论多么庞大的 CASE 表达式，最后也只会返回一个值。
+
+### 3.5.2 如何使用
+
+```sql
+SELECT product_name
+       CASE WHEN product_type='衣服' THEN CONCAT('A : ',product_type)
+            WHEN product_type='办公用品' THEN CONCAT('B : ',product_type)
+            WHEN product_type='厨房用具' THEN CONCAT('C : ',product_type)
+            ELSE NULL
+       END as abc_product_type
+FROM product;
+```
+
+ELSE 子句也可以省略不写，这时会被默认为 ELSE NULL。但为了防止有人漏读，还是希望大家能够显式地写出 ELSE 子句。 此外， CASE 表达式最后的“END”是不能省略的，请大家特别注意不要遗漏。忘记书写 END 会发生语法错误，这也是初学时最容易犯的错误。
+
+假如要在列的方向上展示不同种类额聚合值，该如何写呢？
+
