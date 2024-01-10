@@ -273,3 +273,114 @@ FROM product as P1);
 
 ### 3.3.3 日期函数
 
+- CURRENT_DATE 当前日期
+
+- CURRENT_TIME 当前时间
+
+- CURRENT_TIMESTAMP 当前时间戳
+
+- EXTRACT 提取日期元素
+
+```sql
+EXTRACR (时间元素 FROM CURRENT_TIMESTAMP)
+```
+
+可用的时间元素有 YEAR 年 ， MONTH 月 ， DAY 日 ， HOUR 时 ， MINUTE 分 ， SECOND 秒
+
+### 3.3.4 转换函数
+
+* CAST -- 类型转换
+
+语法：`CAST（转换前的值 AS 想要转换的数据类型）`
+
+```sql
+SELECT CAST('0001' AS SIGNED INTEGER);
+```
+
+**注意转换为整型的时候需要标明是SIGNED还是UNSIGNED**
+
+* COALSESCE -- 将NULL转换为其他值
+
+语法：`COALESCE(数据1，数据2，数据3……)`
+
+COALESCE 是 SQL 特有的函数。该函数会返回可变参数 A 中左侧开始第 1个不是NULL的值。参数个数是可变的，因此可以根据需要无限增加。
+
+```sql
+SELECT COALESCE(NULL, 11) AS col_1,
+COALESCE(NULL, 'hello world', NULL) AS col_2,
+COALESCE(NULL, NULL, '2020-11-01') AS col_3;
+```
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/5e7956f9-6266-4067-8774-08b691c5be9f)
+
+## 3.4 谓词
+
+### 3.4.1 什么是谓词
+
+谓词主要有以下几个：
+
+* LIKE
+
+* BETWEEN
+
+* IS NULL、IS NOT NULL
+
+* IN
+
+* EXISTS
+
+### 3.4.2 LIKE
+
+LIKE用于字符串部分一致查询
+
+当需要进行字符串的部分一致查询时需要使用该谓词。
+
+部分一致大体可以分为前方一致、中间一致和后方一致三种类型。
+
+在LIKE中用%代替任意多个字符，用_代替一个字符
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/f76a0f87-f070-4fa5-8b34-9ee410ee5ae7)
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/eb2747bb-8001-4418-8442-5e5686f30d7f)
+
+### 3.4.3 BETWEEN
+
+BETWEEN用于范围查询
+
+选取出销售价格在100到1000之内的产品
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/ac23813a-33b7-491d-bdb3-29c1fe2a8fb5)
+
+**注意：BETWEEN包含两个端点值，如果不想包含，用<和>**
+
+### 3.4.4 IS NULL 和 IS NOT NULL
+
+当值为NULL时不能用 = 和 <> 等比较运算符，要用 IS NULL 或者 IS NOT NULL
+
+### 3.4.5 IN 
+
+IN是OR的简便用法
+
+例:
+
+```sql
+SELECT product_name,purchase_price
+FROM product
+WHERE purchase_price = 320
+OR purchase_price = 500
+OR purchase_price = 5000;
+```
+
+可以用
+
+```sql
+SELECT product_name,purchase_price
+FROM product
+WHERE purchase_price IN (320,500,5000);
+```
+
+来替换，会方便很多，可读性也大幅提高
+
+### 3.4.6 使用子查询作为IN的参数
+
+IN和NOT IN可以使用子查询作为参数
