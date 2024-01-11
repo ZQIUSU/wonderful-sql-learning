@@ -430,3 +430,74 @@ ELSE 子句也可以省略不写，这时会被默认为 ELSE NULL。但为了�
 
 假如要在列的方向上展示不同种类额聚合值，该如何写呢？
 
+```sql
+SELECT SUM(CASE WHEN product_type ='衣服' THEN sale_price ELSE 0 END) as sum_price_clothes,
+       SUM(CASE WHEN product_type ='厨房用具' THEN sale_price ELSE 0 END) as sum_price_kitchen,
+       SUM(CASE WHEN product_type ='办公用品' THEN sale_price ELSE 0 END) as sum_price_office
+FROM product;
+```
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/675c61c0-8f7e-420f-b9be-7f04c7704b80)
+
+如何实现行列转换
+
+例如插入下列数据
+
+```sql
+INSERT INTO subject values ('张三','语文',93),
+			   ('张三','数学',88),
+     	                   ('张三','外语',91),
+                           ('李四','语文',87),
+                           ('李四','数学',90),
+                           ('李四','外语',77);
+```
+
+如果想实现下边这个表该如何查找
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/d59c194f-e98e-4569-85a1-23d51519f3b8)
+
+应该使用聚合函数 + CASE WHEN表达式
+
+```sql
+SELECT name,
+	   SUM(CASE WHEN subject='语文' THEN score ELSE NULL END) as chinese,
+	   SUM(CASE WHEN subject='数学' THEN score ELSE NULL END) as math,
+	   SUM(CASE WHEN subject='外语' THEN score ELSE NULL END) as english
+FROM subject
+GROUP BY name;
+```
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/4873a409-bd37-4e74-90b1-0b3efe48e18f)
+
+# 练习题
+
+1.四则运算中含有 NULL 时（不进行特殊处理的情况下），运算结果是否必然会变为NULL ？
+
+答:是
+
+2.对本章中使用的 `product`（商品）表执行如下 2 条 `SELECT` 语句，能够得到什么样的结果呢？
+
+```sql
+SELECT product_name, purchase_price
+  FROM product
+ WHERE purchase_price NOT IN (500, 2800, 5000);
+```
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/7b4968cd-1712-410b-8ca0-b10c0ad10764)
+
+```sql
+SELECT product_name, purchase_price
+  FROM product
+ WHERE purchase_price NOT IN (500, 2800, 5000, NULL);
+```
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/e05dc93c-4218-4de7-9921-eacdecd0b95a)
+
+3.按照销售单价( sale_price )对练习 3.6 中的 product（商品）表中的商品进行如下分类
+
+* 低档商品：销售单价在1000日元以下（T恤衫、办公用品、叉子、擦菜板、 圆珠笔）
+
+* 中档商品：销售单价在1001日元以上3000日元以下（菜刀）
+
+* 高档商品：销售单价在3001日元以上（运动T恤、高压锅）
+
