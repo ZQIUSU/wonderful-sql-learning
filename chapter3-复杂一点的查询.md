@@ -501,3 +501,11 @@ SELECT product_name, purchase_price
 
 * 高档商品：销售单价在3001日元以上（运动T恤、高压锅）
 
+```sql
+SELECT SUM(CASE WHEN sale_price <= 1000 THEN 1 ELSE 0 END),
+       SUM(CASE WHEN sale_price BETWEEN 1001 AND 3000 THEN 1 ELSE 0 END),
+       SUM(CASE WHEN sale_price >= 3001 THEN 1 ELSE 0 END)
+FROM product;
+```
+
+这里把sale_price改成1就好了
