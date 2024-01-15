@@ -1,4 +1,4 @@
-# 集合运算
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/53b4217d-7454-4b31-9961-db055828e5a0)# 集合运算
 
 ## 4.1 表的加减法
 
@@ -113,3 +113,109 @@ WHERE product_id NOT IN(SELECT product_id
 ![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/2e56d743-9717-4745-a10d-b044c3803ea1)
 
 ## 4.2 JOIN 连结
+
+连结(JOIN)就是使用某种关联条件(一般是使用相等判断谓词"=")， 将其他表中的列添加过来，进行“添加列”的集合运算。可以说，连结是 SQL 查询的核心操作，掌握了连结，能够从两张甚
+
+至多张表中获取列，能够将过去使用关联子查询等过于复杂的查询简化为更加易读的形式，以及进行一些更加复杂的查询。
+
+SQL 中的连结有多种分类方法，我们这里使用最基础的内连结和外连结的分类方法来分别进行讲解。
+
+### 4.2.1 內连结
+
+#### 4.2.1.1 使用內连结从两个表中获取信息
+
+简单来说JOIN就是引申列，UNION，INTERACT，EXCEPT是对行做改变
+
+```sql
+FROM <table 1> INNER JOIN <table 2> ON <conditions>;
+```
+
+我们从shopproduct表和product表中可以获得一个公共信息就是product_id，作为连接两个表的桥梁
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/2f01cbb0-4d8b-4bf4-ba97-16281c873adc)
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/1e1ee19f-5209-4a90-907b-44ea5cc0d356)
+
+**要点一: 进行连结时需要在 FROM 子句中使用多张表**
+
+之前的 FROM 子句中只有一张表，而这次我们同时使用了 shopproduct 和 product 两张表，使用关键字 INNER JOIN 就可以将两张表连结在一起了
+
+**要点二:必须使用 ON 子句来指定连结条件**
+
+在进行内连结时 ON 子句是必不可少的(大家可以试试去掉上述查询的 ON 子句后会有什么结果)。
+
+ON 子句是专门用来指定连结条件的，我们在上述查询的 ON 之后指定两张表连结所使用的列以及比较条件，基本上，它能起到与 WHERE 相同的筛选作用，我们会在本章的结尾部分进一步探讨
+
+这个话题。
+
+**要点三: SELECT 子句中的列最好按照 表名.列名 的格式来使用**
+
+当两张表的列除了用于关联的列之外，没有名称相同的列的时候，也可以不写表名，但表名使得我们能够在今后的任何时间阅读查询代码的时候，都能马上看出每一列来自于哪张表，能够节省
+
+我们很多时间。
+
+但是，如果两张表有其他名称相同的列，则必须使用上述格式来选择列名，否则查询语句会报错。
+
+我们回到上述查询所回答的问题。通过观察上述查询的结果，我们发现，这个结果离我们的目标：找出东京商店的衣服类商品的基础信息已经很接近了。接下来，我们只需要把这个查询结果作
+
+为一张表，给它增加一个 WHERE 子句来指定筛选条件。
+
+### 4.2.1.2 结合WHERE语句使用內连结
+
+WHERE语句放在ON语句的后边
+
+子查询也是一个表，只不过是虚拟的，它并不真实存在于数据库中，只是数据库中其他表经过筛选，聚合等查询操作后得到的一个“视图”。
+
+# 练习题
+
+找出每个商店里的衣服类商品的名称及价格等信息，希望得到如下结果：
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/17f67d16-50a9-4d4a-8b31-a412ddf68b08)
+
+```sql
+SELECT sp.shop_id,
+	   sp.shop_name,
+	   sp.product_id,
+	   p.product_name,
+	   p.product_type,
+	   p.purchase_price
+FROM product p 
+INNER JOIN shopproduct sp
+ON p.product_id =sp.product_id 
+WHERE product_type = '衣服';
+```
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/ec14f4f9-f48f-42a0-8f7e-808ebbe357f5)
+
+# 练习题
+
+分别使用连结两个子查询和不使用子查询的方式，找出东京商店里，售价低于 2000 的商品信息，希望得到如下结果。
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/bca00b80-ce0d-4184-9db6-be97a5e8834b)
+
+不使用子查询
+
+```sql
+SELECT p.*,
+	   sp.*
+FROM product p 
+INNER JOIN shopproduct sp
+ON p.product_id = sp.product_id 
+WHERE sale_price <2000 AND sp.shop_name = '东京';
+```
+
+使用子查询
+
+```sql
+SELECT p.*,
+	   sp.*
+FROM (SELECT *
+      FROM product 
+      WHERE sale_price< 2000) as p  
+INNER JOIN (SELECT * 
+			FROM shopproduct 
+		    WHERE shop_name = '东京') as sp
+ON p.product_id = sp.product_id ;
+```
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/9257cac2-60e4-4844-8cf6-fd0724ef9859)
