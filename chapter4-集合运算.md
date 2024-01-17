@@ -1,4 +1,4 @@
-![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/53b4217d-7454-4b31-9961-db055828e5a0)# 集合运算
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/4f00e322-3b29-417f-b963-104cf4b4335a)![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/53b4217d-7454-4b31-9961-db055828e5a0)# 集合运算
 
 ## 4.1 表的加减法
 
@@ -248,7 +248,72 @@ GROUP BY sp.shop_name
 
 #### 4.2.1.4 自连结
 
-之前的内连结，连结的都是不一样的两个表。但实际上一张表也可以与自身作连结，这种连接称之为自连结。需要注意，自连结并不是区分于内连结和外连结的第三种连结，自连结可以是外连结也可以是内连结，它是不同于内连结外连结的另一个连结的分类方法。
+之前的内连结，连结的都是不一样的两个表。但实际上一张表也可以与自身作连结，这种连接称之为自连结。需要注意，自连结并不是区分于内连结和外连结的第三种连结，自连结可以是外连
+
+结也可以是内连结，它是不同于内连结外连结的另一个连结的分类方法。
 
 #### 4.2.1.5 内连结与关联子查询
+
+回想一下之前的一个问题：求每个种类中售价高于平均价格的商品
+
+当时是这么做的:
+
+```sql
+SELECT product_type,product_name,sale_price
+FROM product as p1
+WHERE sale_price>(SELECT AVG(sale_price)
+                  FROM product as p2
+		  WHERE p1.product_type=p2.product_type
+		  GROUP BY product_type)
+```
+
+我们现在使用內连结同样可以解决这个问题
+
+```sql
+SELECT product_id,product_name,sale_price,p2.avg_price
+FROM product p1 
+INNER JOIN (SELECT product_type,
+	    AVG(sale_price) as avg_price
+            FROM product
+            GROUP BY product_type) as p2
+ON p.product_type=p2.product_type
+WHERE p1.sale_price>p2.avg_price;
+```
+
+#### 4.2.1.6 自然连结
+
+自然连结并不是区别于内连结和外连结的第三种连结，它其实是内连结的一种特例--当两个表进行自然连结时，会按照两个表中都包含的列名来进行等值内连结，此时无需使用 ON 来指定连接
+
+条件。
+
+```sql
+SELECT * FROM shopproduct NATURAL JOIN product;
+```
+
+# 练习题 
+
+试写出与上题等价的內连结
+
+```sql
+SELECT p.*,s.shop_id,s.shop_name,s.quantity
+FROM product p 
+INNER JOIN shopproduct s 
+ON p.product_id =s.product_id 
+```
+
+使用自然连结还可以求出两张表或子查询的公共部分，例如教材中 7-1 选取表中公共部分--INTERSECT 一节中的问题：求表 product 和表 product2 中的公共部分，也可以用自然连结来实
+
+现：
+
+```sql
+SELECT * FROM product NATURAL JOIN product2;
+```
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/f5d7345d-a9f4-447f-8779-c797fc48bdfc)
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/fa087c0d-254a-49d1-81c6-84a0079f9bfe)
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/16f8e2b9-741e-48dc-a56a-adeea9315d9a)
+
+可以看到0003号没有连结上，这是因为0003号商品的regist_date字段为NULL，这是因为NATURAL是逐字段等值来进行连结的，NULL不等于NULL所以没有连结
 
