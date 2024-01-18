@@ -317,3 +317,91 @@ SELECT * FROM product NATURAL JOIN product2;
 
 可以看到0003号没有连结上，这是因为0003号商品的regist_date字段为NULL，这是因为NATURAL是逐字段等值来进行连结的，NULL不等于NULL所以没有连结
 
+### 4.2.2 外连结
+
+内连结会丢弃两张表中不满足 ON 条件的行，和内连结相对的就是外连结。外连结会根据外连结的种类有选择地保留无法匹配到的行。
+
+按照保留的行位于哪张表,外连结有三种形式：左连结，右连结和全外连结。
+
+三种外连结的对应语法分别为：
+
+```sql
+-- 左连结     
+FROM <tb_1> LEFT  OUTER JOIN <tb_2> ON <condition(s)>
+-- 右连结     
+FROM <tb_1> RIGHT OUTER JOIN <tb_2> ON <condition(s)>
+-- 全外连结
+FROM <tb_1> FULL  OUTER JOIN <tb_2> ON <condition(s)>
+```
+
+#### 4.2.2.1 左连结
+
+练习题：统计每种商品分别在哪些商店有售，需要包括那些在每个商店都没货的商品。
+
+```sql
+SELECT SP.shop_id
+       ,SP.shop_name
+       ,SP.product_id
+       ,P.product_name
+       ,P.sale_price
+  FROM product AS P
+  LEFT OUTER JOIN shopproduct AS SP
+    ON SP.product_id = P.product_id;
+```
+
+外连结还有一点非常重要，那就是要把哪张表作为主表。最终的结果中会包含主表内所有的数据。指定主表的关键字是 LEFT 和 RIGHT。
+
+#### 4.2.2.2 使用WHERE子句使用左连结
+ 
+# 练习题
+
+使用外连结从shopproduct表和product表中找出那些在某个商店库存少于50的商品及对应的商店。希望得到如下结果。
+
+```sql
+SELECT  S.product_name,
+	SP.shop_name,
+FROM product as S
+LEFT OUTER JOIN shopproduct as SP
+ON SP.product_id=P.product_id
+WHERE SP.quantity<50;
+```
+
+上边这个查询结果没有quantity为NULL的商品，很明显不符合我们要查找的结果，于是改进后
+
+```sql
+SELECT  P.product_name,
+	SP.shop_name,
+	SP.quantity 
+FROM product as P
+LEFT OUTER JOIN 
+	(SELECT *
+	FROM shopproduct 
+	WHERE quantity<50) as SP
+ON P.product_id=SP.product_id;
+```
+
+或者
+
+```sql
+SELECT  P.product_name,
+	SP.shop_name,
+	SP.quantity 
+FROM product as P
+LEFT OUTER JOIN shopproduct as SP
+ON SP.product_id=P.product_id
+WHERE SP.quantity<50
+   OR quantity is NULL;
+```
+
+#### 4.2.2.3 在MYSQL中使用全外连结
+
+有了对左连结和右连结的了解，就不难理解全外连结的含义了。全外连结本质上就是对左表和右表的所有行都予以保留，能用 ON 关联到的就把左表和右表的内容在一行内显示，不能被关联到
+
+的就分别显示，然后把多余的列用缺失值填充。
+
+遗憾的是，MySQL8.0 目前还不支持全外连结，不过我们可以对左连结和右连结的结果进行 UNION 来实现全外连结。、
+
+### 4.2.3 多表连结
+
+#### 4.2.3.1 多表內连结
+
