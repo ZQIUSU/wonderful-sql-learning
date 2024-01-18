@@ -405,3 +405,100 @@ WHERE SP.quantity<50
 
 #### 4.2.3.1 多表內连结
 
+先创建一个用于多表內连结的仓库库存管理表Inventoryproduct，假设有两个仓库P001,P002
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/4e94a4b3-64ad-4c23-b9e4-db55cf91fb06)
+
+接下来，我们根据上表及 shopproduct 表和 product 表，使用内连接找出每个商店都有那些商品，每种商品的库存总量分别是多少。
+
+```sql
+SELECT SP.product_id ,
+       SP.shop_id ,
+       SP.shop_name ,
+       P.product_name ,
+       P.sale_price ,
+       IP.quantity 
+FROM shopproduct as SP
+INNER JOIN product as P
+ON SP.product_id =P.product_id 
+INNER JOIN Inventoryproduct as IP
+ON SP.product_id =IP.product_id 
+WHERE IP.inventory_id ='P001';
+```
+
+得到如下结果
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/2422db0f-0a3d-474d-9aff-cbd5dcbe0e53)
+
+#### 4.2.3.2 多表进行外连结
+
+```sql
+SELECT P.product_id ,
+	   P.product_name ,
+       P.sale_price ,
+       SP.shop_id ,
+       SP.shop_name ,
+       IP.quantity 
+FROM product as P
+LEFT OUTER JOIN shopproduct as SP
+ON SP.product_id =P.product_id 
+LEFT OUTER JOIN Inventoryproduct as IP
+ON SP.product_id =IP.product_id 
+;
+```
+
+查询结果
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/6ef4e9b8-2fa8-44ad-a14b-a8bb9cc851a9)
+
+### 4.2.4 ON子句进阶，非等值连结
+
+#### 4.2.4.1 非等值自左连结
+
+# 练习题
+
+希望对 product 表中的商品按照售价赋予排名。一个从集合论出发，使用自左连结的思路是，对每一种商品，找出售价不低于它的所有商品，然后对售价不低于它的商品使用 COUNT 函数计
+
+数。例如，对于价格最高的商品，
+
+```sql
+SELECT  product_id
+       ,product_name
+       ,sale_price
+       ,COUNT(p2_id) AS my_rank
+FROM  -- 使用自左连结对每种商品找出价格不低于它的商品
+        (SELECT P1.product_id
+               ,P1.product_name
+               ,P1.sale_price
+               ,P2.product_id AS P2_id
+               ,P2.product_name AS P2_name
+               ,P2.sale_price AS P2_price 
+          FROM product AS P1 
+          LEFT OUTER JOIN product AS P2 
+            ON P1.sale_price <= P2.sale_price 
+            ORDER BY sale_price DESC
+        ) AS X
+GROUP BY product_id, sale_price
+ORDER BY my_rank; 
+```
+
+#### 4.2.4.2 多表进行外连结
+
+正如之前所学发现的，外连结一般能比内连结有更多的行，从而能够比内连结给出更多关于主表的信息，多表连结的时候使用外连结也有同样的作用。
+
+```sql
+SELECT P.product_id
+       ,P.product_name
+       ,P.sale_price
+       ,SP.shop_id
+       ,SP.shop_name
+       ,IP.inventory_quantity
+  FROM product AS P
+  LEFT OUTER JOIN shopproduct AS SP
+ON SP.product_id = P.product_id
+LEFT OUTER JOIN Inventoryproduct AS IP
+ON SP.product_id = IP.product_id;
+```
+
+### 4.2.4 ON子句进阶--非等值连结
+
