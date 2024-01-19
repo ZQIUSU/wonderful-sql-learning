@@ -502,3 +502,55 @@ ON SP.product_id = IP.product_id;
 
 ### 4.2.4 ON子句进阶--非等值连结
 
+```sql
+SELECT  product_id
+       ,product_name
+       ,sale_price
+       ,COUNT(p2_id) AS my_rank
+  FROM ( -- 使用自左连结对每种商品找出价格不低于它的商品
+        SELECT P1.product_id
+               ,P1.product_name
+               ,P1.sale_price
+               ,P2.product_id AS P2_id
+               ,P2.product_name AS P2_name
+               ,P2.sale_price AS P2_price 
+          FROM product AS P1 
+          LEFT OUTER JOIN product AS P2 
+            ON P1.sale_price <= P2.sale_price 
+            ORDER BY sale_price DESC
+        ) AS X
+ GROUP BY product_id, sale_price
+ ORDER BY my_rank;
+```
+
+上边这个语句表示使用聚合函数找出每个商品有几个商品低于或等于自己的价格的，也就是按价格排序
+
+注 1：COUNT 函数的参数是列名时，会忽略该列中的缺失值，参数为 * 时则不忽略缺失值。 注 2：上述排名方案存在一些问题--如果两个商品的价格相等，则会导致两个商品的排名错误，
+
+例如，叉子和打孔器的排名应该都是第六，但上述查询导致二者排名都是第七。试修改上述查询使得二者的排名均为第六。
+
+# 练习题
+
+请按照商品的售价从低到高，对售价进行累计求和[注：这个案例缺少实际意义, 并且由于有两种商品价格相同导致了不必要的复杂度, 但示例数据库的表结构比较简单, 暂时未想出有实际意
+
+义的例题]
+
+```sql
+SELECT product_id,
+       product_name,
+       sale_price,
+       SUM(p2_price) as sum_price
+  FROM (SELECT  P1.product_id
+       ,P1.product_name
+       ,P1.sale_price
+       ,P2.product_id AS P2_id
+       ,P2.product_name AS P2_name
+       ,P2.sale_price AS P2_price 
+  FROM product AS P1 
+  LEFT OUTER JOIN product AS P2 
+    ON P1.sale_price >= P2.sale_price
+ ORDER BY P1.sale_price,P1.product_id) AS P3
+ GROUP BY P3.product_id
+ ORDER BY sum_price ASC;
+```
+
