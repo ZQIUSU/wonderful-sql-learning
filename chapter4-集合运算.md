@@ -691,5 +691,26 @@ ON p.sale_price=O.max_price AND p.product_type = O.product_type;
 关联子查询
 
 ```sql
+SELECT product_id,
+       product_name
+FROM product p1
+WHERE sale_price = (SELECT MAX(sale_price) as max_price
+                    FROM product p2 
+                    WHERE p1.product_type=p2.product_type)
+```
 
+# 5.用关联子查询实现：在 product 表中，取出 product_id、product_name、sale_price，并按照商品的售价从低到高进行排序，对售价进行累计求和。
+
+```sql
+SELECT product_id ,
+       product_name ,
+       sale_price,
+       (SELECT sum(sale_price)
+		FROM product p2
+		WHERE p1.sale_price  > p2.sale_price 
+		   OR p2.sale_price =p1.sale_price 
+		  AND p2.product_id >=p1.product_id
+		) as sum_price
+FROM product p1
+ORDER BY sum_price
 ```
