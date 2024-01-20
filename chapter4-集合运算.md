@@ -596,3 +596,100 @@ ORDER BY sum_price
 下，不求id的那个，如果三个售价相等，4，7，9，我们求4号商品的总价就不包括7，9，求7号不包括9，求9的时候都包括，这样就解决了重复的问题了
 
 ### 4.2.5 交叉连结
+
+也就是笛卡尔积
+
+有两种语法
+
+```sql
+-- 1.使用关键字 CROSS JOIN 显式地进行交叉连结
+SELECT SP.shop_id
+       ,SP.shop_name
+       ,SP.product_id
+       ,P.product_name
+       ,P.sale_price
+  FROM shopproduct AS SP
+ CROSS JOIN product AS P;
+-- 2.使用逗号分隔两个表,并省略INNER JOIN, ON 子句
+SELECT SP.shop_id
+       ,SP.shop_name
+       ,SP.product_id
+       ,P.product_name
+       ,P.sale_price
+  FROM shopproduct AS SP , product AS P;
+```
+
+### 4.2.6 连结的特定语法和过时语法
+
+在笛卡尔积的基础上，我们增加一个 WHERE 子句，将之前的连结条件作为筛选条件加进去，我们会发现，得到的结果恰好是直接使用内连接的结果。
+
+# 练习题
+
+# 1.找出 product 和 product2 中售价高于 500 的商品的基本信息。
+
+```sql
+SELECT * 
+FROM (SELECT *
+	FROM product p 
+	UNION
+	SELECT *
+	FROM product2 p2) as X
+WHERE sale_price>500;
+```
+
+# 2.借助对称差的实现方式，求product和product2的交集。
+
+```sql
+SELECT * 
+FROM (SELECT *
+	FROM product p 
+	UNION
+	SELECT *
+	FROM product2 p2) as X
+WHERE product_id NOT IN (SELECT product_id 
+		         FROM product
+		         WHERE product_id NOT IN (SELECT product_id FROM product2)
+		         UNION
+		         SELECT product_id
+		         FROM product2
+		         WHERE product_id NOT IN (SELECT product_id FROM product)
+			);
+```
+
+# 3.每类商品中售价最高的商品都在哪些商店有售 ？
+
+```sql
+SELECT shop_id ,
+	   shop_name ,
+	   product_id 
+FROM shopproduct  
+WHERE product_id IN (SELECT product_id
+		     FROM product p 
+		     INNER JOIN (SELECT product_type,
+				        MAX(sale_price) as max_price
+			         FROM product 
+			         GROUP BY product_type )as O 
+		     ON p.product_type=O.product_type AND p.sale_price=O.max_price);
+```
+
+# 4.分别使用内连结和关联子查询每一类商品中售价最高的商品。
+
+內连结
+
+```sql
+SELECT product_id,
+       product_name
+FROM product p
+INNER JOIN (SELECT product_type,
+                   MAX(sale_price) as max_price
+            FROM product p 
+            GROUP BY product_type 
+            ) as O
+ON p.sale_price=O.max_price AND p.product_type = O.product_type;
+```
+
+关联子查询
+
+```sql
+
+```
