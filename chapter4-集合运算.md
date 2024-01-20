@@ -554,3 +554,45 @@ SELECT product_id,
  ORDER BY sum_price ASC;
 ```
 
+注 1：COUNT 函数的参数是列名时，会忽略该列中的缺失值，参数为 * 时则不忽略缺失值。 注 2：上述排名方案存在一些问题--如果两个商品的价格相等，则会导致两个商品的排名错误，
+
+例如，叉子和打孔器的排名应该都是第六，但上述查询导致二者排名都是第七。试修改上述查询使得二者的排名均为第六。注 3：实际上，进行排名有专门的函数，这是 MySQL 8.0 新增加的
+
+窗口函数中的一种(窗口函数将在下一章学习)，但在较低版本的 MySQL 中只能使用上述自左连结的思路。
+
+# 练习题
+
+请按照商品的售价从低到高，对售价进行累计求和[注：这个案例缺少实际意义, 并且由于有两种商品价格相同导致了不必要的复杂度, 但示例数据库的表结构比较简单, 暂时未想出有实际意
+
+义的例题]
+
+首先找出比该商品售价更低的商品
+
+```sql
+SELECT product_id,
+	   product_name,
+	   sale_price,
+       SUM(p2_price) as sum_price
+FROM (SELECT p.product_id,
+	       p.product_name,
+	       p.sale_price,
+	       p2.product_id as p2_id,
+	       p2.product_name as p2_name,
+	       p2.sale_price as p2_price
+	FROM product p
+	LEFT OUTER JOIN product p2 
+	ON p.sale_price>=p2.sale_price 
+	ORDER BY p.sale_price) as X
+GROUP BY product_id
+ORDER BY sum_price
+```
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/15e254be-18a5-4a47-9ae5-5efccc21b2b1)
+
+我们可以发现售价相等时打孔器和叉子的和是相等的，所以我们需要改一下连结条件，找出低于p的售价的或者，等于p的售价的并且已经连结过一次的，我们这样理解，2，6号商品售价相等
+
+我们这样2，6商品的售价总和都是1100，是这样算的，2号商品的售价大于2，6，8号商品，6号商品的售价大于2，6，8号商品，其中2，6是相等的，所以我们就可以只求售价相等的条件
+
+下，不求id的那个，如果三个售价相等，4，7，9，我们求4号商品的总价就不包括7，9，求7号不包括9，求9的时候都包括，这样就解决了重复的问题了
+
+### 4.2.5 交叉连结
