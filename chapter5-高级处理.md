@@ -88,3 +88,33 @@ SELECT  product_id
 # 5.3 计算移动平均
 
 在上面提到，聚合函数在窗口函数使用时，计算的是累积到当前行的所有的数据的聚合。 实际上，还可以指定更加详细的汇总范围。该汇总范围称为 框架 (frame)。
+
+PRECEDING（“之前”）， 将框架指定为 “截止到之前 n 行”，加上自身行
+
+FOLLOWING（“之后”）， 将框架指定为 “截止到之后 n 行”，加上自身行
+
+```sql
+SELECT  product_id
+       ,product_name 
+       ,sale_price
+       ,SUM(sale_price) OVER (ORDER BY sale_price ) as current_sum 
+       ,SUM(sale_price) OVER (ORDER BY sale_price ROWS 1 PRECEDING) AS PRECEDING_sum
+  FROM product;
+```
+
+表示求本身一行和之前一行的值，如果再求之后一行要用BETWEEN ··· AND ···
+
+```sql
+SELECT  product_id
+       ,product_name 
+       ,sale_price
+       ,SUM(sale_price) OVER (ORDER BY sale_price ) as current_sum 
+       ,SUM(sale_price) OVER (ORDER BY sale_price ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) AS PRECEDING_sum
+  FROM product;
+```
+
+## 5.4 GROUPING 运算符
+
+### 5.4.1 ROLLUP计算合计以及小计
+
+常规的
