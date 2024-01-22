@@ -117,4 +117,26 @@ SELECT  product_id
 
 ### 5.4.1 ROLLUP计算合计以及小计
 
-常规的
+常规的GROUP BY我们只能查询到这些
+
+```sql
+SELECT  product_type
+       ,SUM(sale_price) AS sum_price
+  FROM product
+ GROUP BY product_type
+```
+
+![image](https://github.com/ZQIUSU/wonderful-sql-learning/assets/91874269/88f68f28-4848-47aa-b90a-a52e22a0b548)
+
+这是因为这时如果我们想查看regist_date的值都为NULL，因为GROUP BY已经聚合了那几行，我们可以使用ROLLUP函数把小计展开
+
+```sql
+SELECT  product_type
+       ,regist_date
+       ,SUM(sale_price) AS sum_price
+  FROM product
+ GROUP BY product_type, regist_date WITH ROLLUP; 
+```
+
+## 5.5 存储过程和函数
+
